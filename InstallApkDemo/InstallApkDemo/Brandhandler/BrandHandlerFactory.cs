@@ -6,33 +6,44 @@ public static class BrandHandlerFactory
 {
     public static IBrandHandler GetHandler(DeviceData device, AdbClient client)
     {
-        // 1. 获取品牌
+        // 获取品牌
         var receiver = new ConsoleOutputReceiver();
         client.ExecuteRemoteCommand("getprop ro.product.brand", device, receiver);
         string brand = receiver.ToString().Trim().ToLower();
 
-        // 2. 从 JSON 加载配置数据 (复用上一轮对话的 ProfileFactory)
-        //var profile = BrandProfileFactory.GetProfile(brand);
-
-        // 3. 返回对应的 Handler 类
-        switch (brand)
+        return brand switch
         {
-            case "huawei":
-            case "honor": // 荣耀通常和华为逻辑类似
-                return new HuaweiHandler();
-                
-            case "xiaomi":
-            case "redmi":
-                return new XiaomiHandler();
-                
-            case "oppo":
-            // return new OppoHandler(profile);
-                
-            case "vivo":
-            // return new VivoHandler(profile);
+            "oppo" => new OppoHandler(),
+            "xiaomi" => new XiaomiHandler(),
+            "redmi" => new XiaomiHandler(),
+            // "huawei" => new HuaweiHandler(),
+            _ => new OppoHandler() // 默认或者通用处理器
+        };
+    }
+}
 
-            default:
-                return new DefaultBrandHandler();
+// 简单的扩展方法类，方便代码阅读
+public static class AdbExtensions 
+{
+    public static bool IsPackageInstalled(this DeviceData device, AdbClient client, string packageId)
+    {
+        var receiver = new ConsoleOutputReceiver();
+        client.ExecuteRemoteCommand($"pm list packages {packageId}", device, receiver);
+        return receiver.ToString().Contains(packageId);
+    }
+}
+
+public static class AdbHelper
+{
+    public static string GetCurrentFocus(DeviceData device, AdbClient client)
+    {
+        try
+        {
+            var r = new ConsoleOutputReceiver();
+            // 注意：grep mCurrentFocus 在某些新 Android 上可能需要改用 dumpsys activity activities
+            client.ExecuteRemoteCommand("dumpsys window | grep mCurrentFocus", device, r);
+            return r.ToString();
         }
+        catch { return ""; }
     }
 }

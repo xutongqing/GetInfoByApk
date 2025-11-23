@@ -1,28 +1,39 @@
+using InstallApkDemo.Model;
 using SharpAdbClient;
 
 namespace InstallApkDemo.Brandhandler;
 
+// ================== Xiaomi / MIUI 处理器 ==================
 public class XiaomiHandler : IBrandHandler
 {
-    public void ShowPreInstallInstructions()
+    public InstallBlockingState DetectState(DeviceData device, AdbClient client)
     {
-        Console.ForegroundColor = ConsoleColor.Yellow;
-        Console.WriteLine("【小米设备提示】");
-        Console.WriteLine("1. 请确保手机已插入 SIM 卡（开启USB安装权限必须）。");
-        Console.WriteLine("2. 开发者选项中，请开启【USB安装】和【USB调试(安全设置)】。");
-        Console.ResetColor();
+        string focus = AdbHelper.GetCurrentFocus(device, client);
+        // 小米的安装器通常叫 com.miui.packageinstaller
+        if (focus.Contains("com.miui.packageinstaller", StringComparison.OrdinalIgnoreCase))
+            return InstallBlockingState.CordsClick;
+
+        return InstallBlockingState.None;
     }
 
-    public void OnInstallingAction()
+    public async Task<bool> HandleBlockingStateAsync(DeviceData device, AdbClient client, InstallBlockingState state)
     {
-        Console.WriteLine("【小米】安装中... 请注意手机屏幕可能会有倒计时弹窗，请准备点击。");
+        if (state == InstallBlockingState.CordsClick)
+        {
+            Console.WriteLine("【Xiaomi】检测到安装弹窗，等待倒计时...");
+            // 小米通常有倒计时，这里可以 Sleep 一下再点
+            await Task.Delay(10000); 
+            // AdbHelper.Tap(device, x, y);
+            return true;
+        }
+        return false;
     }
 
-    public bool CheckPreConditions(DeviceData device, AdbClient client)
+    public async Task ExecuteFallbackInstallAsync(DeviceData device, AdbClient client, InstallModel model)
     {
-        // 小米如果没开USB安装，install命令会报错，这里可以预检
-        // 模拟检查逻辑
-        Console.WriteLine("【小米】正在检查 SIM 卡状态...");
-        return true;
+        Console.WriteLine("【Xiaomi】启动 MIUI 文件管理器兜底...");
+        client.ExecuteRemoteCommand("monkey -p com.android.fileexplorer -c android.intent.category.LAUNCHER 1", device, null);
     }
+
+    public async Task DismissInstallSuccessDialogAsync(DeviceData device, AdbClient client) { /*...*/ }
 }
