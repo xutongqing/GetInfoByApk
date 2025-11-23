@@ -1,0 +1,2 @@
+obj/Debug/net9.0/Protos/Info.cs \
+obj/Debug/net9.0/Protos/InfoGrpc.cs: Protos/info.proto

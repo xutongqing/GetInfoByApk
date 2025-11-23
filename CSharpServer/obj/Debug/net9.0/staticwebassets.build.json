@@ -1,0 +1,12 @@
+{
+  "Version": 1,
+  "Hash": "mX9e/CoySOmG5WQHRMJM274Y7CsD2Xq5OMq0Yf2QwYQ=",
+  "Source": "CSharpServer",
+  "BasePath": "_content/CSharpServer",
+  "Mode": "Default",
+  "ManifestType": "Build",
+  "ReferencedProjectsConfiguration": [],
+  "DiscoveryPatterns": [],
+  "Assets": [],
+  "Endpoints": []
+}

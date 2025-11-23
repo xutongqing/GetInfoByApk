@@ -1,0 +1,38 @@
+syntax = "proto3";
+
+package com.example.infoapp;
+
+option java_multiple_files = true;
+option java_package = "com.example.infoapp.proto";
+option java_outer_classname = "InfoProto";
+option csharp_namespace = "CSharpServer.Protos";
+
+service DataTransferService {
+  rpc SendContacts (ContactList) returns (TransferResponse);
+  rpc SendCallLogs (CallLogList) returns (TransferResponse);
+}
+
+message Contact {
+  string name = 1;
+  string phone_number = 2;
+}
+
+message ContactList {
+  repeated Contact contacts = 1;
+}
+
+message CallLog {
+  string number = 1;
+  string type = 2; // Incoming, Outgoing, Missed
+  int64 date = 3;
+  int64 duration = 4;
+}
+
+message CallLogList {
+  repeated CallLog logs = 1;
+}
+
+message TransferResponse {
+  bool success = 1;
+  string message = 2;
+}
