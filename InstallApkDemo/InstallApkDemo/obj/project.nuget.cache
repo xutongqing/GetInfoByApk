@@ -1,0 +1,28 @@
+{
+  "version": 2,
+  "dgSpecHash": "dLA98JERpYQ=",
+  "success": true,
+  "projectFilePath": "/Users/a/RiderProjects/GetInfoByApk/InstallApkDemo/InstallApkDemo/InstallApkDemo.csproj",
+  "expectedPackageFiles": [
+    "/Users/a/.nuget/packages/microsoft.extensions.logging.abstractions/2.0.0/microsoft.extensions.logging.abstractions.2.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.netcore.platforms/2.0.0/microsoft.netcore.platforms.2.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.win32.systemevents/4.5.0/microsoft.win32.systemevents.4.5.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/sharpadbclient/2.3.23/sharpadbclient.2.3.23.nupkg.sha512",
+    "/Users/a/.nuget/packages/system.buffers/4.5.0/system.buffers.4.5.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/system.drawing.common/4.5.0/system.drawing.common.4.5.0.nupkg.sha512"
+  ],
+  "logs": [
+    {
+      "code": "NU1904",
+      "level": "Warning",
+      "message": "Package 'System.Drawing.Common' 4.5.0 has a known critical severity vulnerability, https://github.com/advisories/GHSA-rxg9-xrhp-64gj",
+      "projectPath": "/Users/a/RiderProjects/GetInfoByApk/InstallApkDemo/InstallApkDemo/InstallApkDemo.csproj",
+      "warningLevel": 1,
+      "filePath": "/Users/a/RiderProjects/GetInfoByApk/InstallApkDemo/InstallApkDemo/InstallApkDemo.csproj",
+      "libraryId": "System.Drawing.Common",
+      "targetGraphs": [
+        "net9.0"
+      ]
+    }
+  ]
+}
