@@ -15,64 +15,34 @@ public final class DataTransferServiceGrpc {
   public static final java.lang.String SERVICE_NAME = "com.example.infoapp.DataTransferService";
 
   // Static method descriptors that strictly reflect the proto.
-  private static volatile io.grpc.MethodDescriptor<com.example.infoapp.proto.ContactList,
-      com.example.infoapp.proto.TransferResponse> getSendContactsMethod;
+  private static volatile io.grpc.MethodDescriptor<com.example.infoapp.proto.InfoRequest,
+      com.example.infoapp.proto.InfoResponse> getGetInfoMethod;
 
   @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "SendContacts",
-      requestType = com.example.infoapp.proto.ContactList.class,
-      responseType = com.example.infoapp.proto.TransferResponse.class,
+      fullMethodName = SERVICE_NAME + '/' + "GetInfo",
+      requestType = com.example.infoapp.proto.InfoRequest.class,
+      responseType = com.example.infoapp.proto.InfoResponse.class,
       methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.example.infoapp.proto.ContactList,
-      com.example.infoapp.proto.TransferResponse> getSendContactsMethod() {
-    io.grpc.MethodDescriptor<com.example.infoapp.proto.ContactList, com.example.infoapp.proto.TransferResponse> getSendContactsMethod;
-    if ((getSendContactsMethod = DataTransferServiceGrpc.getSendContactsMethod) == null) {
+  public static io.grpc.MethodDescriptor<com.example.infoapp.proto.InfoRequest,
+      com.example.infoapp.proto.InfoResponse> getGetInfoMethod() {
+    io.grpc.MethodDescriptor<com.example.infoapp.proto.InfoRequest, com.example.infoapp.proto.InfoResponse> getGetInfoMethod;
+    if ((getGetInfoMethod = DataTransferServiceGrpc.getGetInfoMethod) == null) {
       synchronized (DataTransferServiceGrpc.class) {
-        if ((getSendContactsMethod = DataTransferServiceGrpc.getSendContactsMethod) == null) {
-          DataTransferServiceGrpc.getSendContactsMethod = getSendContactsMethod =
-              io.grpc.MethodDescriptor.<com.example.infoapp.proto.ContactList, com.example.infoapp.proto.TransferResponse>newBuilder()
+        if ((getGetInfoMethod = DataTransferServiceGrpc.getGetInfoMethod) == null) {
+          DataTransferServiceGrpc.getGetInfoMethod = getGetInfoMethod =
+              io.grpc.MethodDescriptor.<com.example.infoapp.proto.InfoRequest, com.example.infoapp.proto.InfoResponse>newBuilder()
               .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "SendContacts"))
+              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "GetInfo"))
               .setSampledToLocalTracing(true)
               .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  com.example.infoapp.proto.ContactList.getDefaultInstance()))
+                  com.example.infoapp.proto.InfoRequest.getDefaultInstance()))
               .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  com.example.infoapp.proto.TransferResponse.getDefaultInstance()))
+                  com.example.infoapp.proto.InfoResponse.getDefaultInstance()))
               .build();
         }
       }
     }
-    return getSendContactsMethod;
-  }
-
-  private static volatile io.grpc.MethodDescriptor<com.example.infoapp.proto.CallLogList,
-      com.example.infoapp.proto.TransferResponse> getSendCallLogsMethod;
-
-  @io.grpc.stub.annotations.RpcMethod(
-      fullMethodName = SERVICE_NAME + '/' + "SendCallLogs",
-      requestType = com.example.infoapp.proto.CallLogList.class,
-      responseType = com.example.infoapp.proto.TransferResponse.class,
-      methodType = io.grpc.MethodDescriptor.MethodType.UNARY)
-  public static io.grpc.MethodDescriptor<com.example.infoapp.proto.CallLogList,
-      com.example.infoapp.proto.TransferResponse> getSendCallLogsMethod() {
-    io.grpc.MethodDescriptor<com.example.infoapp.proto.CallLogList, com.example.infoapp.proto.TransferResponse> getSendCallLogsMethod;
-    if ((getSendCallLogsMethod = DataTransferServiceGrpc.getSendCallLogsMethod) == null) {
-      synchronized (DataTransferServiceGrpc.class) {
-        if ((getSendCallLogsMethod = DataTransferServiceGrpc.getSendCallLogsMethod) == null) {
-          DataTransferServiceGrpc.getSendCallLogsMethod = getSendCallLogsMethod =
-              io.grpc.MethodDescriptor.<com.example.infoapp.proto.CallLogList, com.example.infoapp.proto.TransferResponse>newBuilder()
-              .setType(io.grpc.MethodDescriptor.MethodType.UNARY)
-              .setFullMethodName(generateFullMethodName(SERVICE_NAME, "SendCallLogs"))
-              .setSampledToLocalTracing(true)
-              .setRequestMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  com.example.infoapp.proto.CallLogList.getDefaultInstance()))
-              .setResponseMarshaller(io.grpc.protobuf.lite.ProtoLiteUtils.marshaller(
-                  com.example.infoapp.proto.TransferResponse.getDefaultInstance()))
-              .build();
-        }
-      }
-    }
-    return getSendCallLogsMethod;
+    return getGetInfoMethod;
   }
 
   /**
@@ -125,16 +95,9 @@ public final class DataTransferServiceGrpc {
 
     /**
      */
-    default void sendContacts(com.example.infoapp.proto.ContactList request,
-        io.grpc.stub.StreamObserver<com.example.infoapp.proto.TransferResponse> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSendContactsMethod(), responseObserver);
-    }
-
-    /**
-     */
-    default void sendCallLogs(com.example.infoapp.proto.CallLogList request,
-        io.grpc.stub.StreamObserver<com.example.infoapp.proto.TransferResponse> responseObserver) {
-      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getSendCallLogsMethod(), responseObserver);
+    default void getInfo(com.example.infoapp.proto.InfoRequest request,
+        io.grpc.stub.StreamObserver<com.example.infoapp.proto.InfoResponse> responseObserver) {
+      io.grpc.stub.ServerCalls.asyncUnimplementedUnaryCall(getGetInfoMethod(), responseObserver);
     }
   }
 
@@ -167,18 +130,10 @@ public final class DataTransferServiceGrpc {
 
     /**
      */
-    public void sendContacts(com.example.infoapp.proto.ContactList request,
-        io.grpc.stub.StreamObserver<com.example.infoapp.proto.TransferResponse> responseObserver) {
+    public void getInfo(com.example.infoapp.proto.InfoRequest request,
+        io.grpc.stub.StreamObserver<com.example.infoapp.proto.InfoResponse> responseObserver) {
       io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getSendContactsMethod(), getCallOptions()), request, responseObserver);
-    }
-
-    /**
-     */
-    public void sendCallLogs(com.example.infoapp.proto.CallLogList request,
-        io.grpc.stub.StreamObserver<com.example.infoapp.proto.TransferResponse> responseObserver) {
-      io.grpc.stub.ClientCalls.asyncUnaryCall(
-          getChannel().newCall(getSendCallLogsMethod(), getCallOptions()), request, responseObserver);
+          getChannel().newCall(getGetInfoMethod(), getCallOptions()), request, responseObserver);
     }
   }
 
@@ -200,16 +155,9 @@ public final class DataTransferServiceGrpc {
 
     /**
      */
-    public com.example.infoapp.proto.TransferResponse sendContacts(com.example.infoapp.proto.ContactList request) {
+    public com.example.infoapp.proto.InfoResponse getInfo(com.example.infoapp.proto.InfoRequest request) {
       return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getSendContactsMethod(), getCallOptions(), request);
-    }
-
-    /**
-     */
-    public com.example.infoapp.proto.TransferResponse sendCallLogs(com.example.infoapp.proto.CallLogList request) {
-      return io.grpc.stub.ClientCalls.blockingUnaryCall(
-          getChannel(), getSendCallLogsMethod(), getCallOptions(), request);
+          getChannel(), getGetInfoMethod(), getCallOptions(), request);
     }
   }
 
@@ -231,23 +179,14 @@ public final class DataTransferServiceGrpc {
 
     /**
      */
-    public com.google.common.util.concurrent.ListenableFuture<com.example.infoapp.proto.TransferResponse> sendContacts(
-        com.example.infoapp.proto.ContactList request) {
+    public com.google.common.util.concurrent.ListenableFuture<com.example.infoapp.proto.InfoResponse> getInfo(
+        com.example.infoapp.proto.InfoRequest request) {
       return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getSendContactsMethod(), getCallOptions()), request);
-    }
-
-    /**
-     */
-    public com.google.common.util.concurrent.ListenableFuture<com.example.infoapp.proto.TransferResponse> sendCallLogs(
-        com.example.infoapp.proto.CallLogList request) {
-      return io.grpc.stub.ClientCalls.futureUnaryCall(
-          getChannel().newCall(getSendCallLogsMethod(), getCallOptions()), request);
+          getChannel().newCall(getGetInfoMethod(), getCallOptions()), request);
     }
   }
 
-  private static final int METHODID_SEND_CONTACTS = 0;
-  private static final int METHODID_SEND_CALL_LOGS = 1;
+  private static final int METHODID_GET_INFO = 0;
 
   private static final class MethodHandlers<Req, Resp> implements
       io.grpc.stub.ServerCalls.UnaryMethod<Req, Resp>,
@@ -266,13 +205,9 @@ public final class DataTransferServiceGrpc {
     @java.lang.SuppressWarnings("unchecked")
     public void invoke(Req request, io.grpc.stub.StreamObserver<Resp> responseObserver) {
       switch (methodId) {
-        case METHODID_SEND_CONTACTS:
-          serviceImpl.sendContacts((com.example.infoapp.proto.ContactList) request,
-              (io.grpc.stub.StreamObserver<com.example.infoapp.proto.TransferResponse>) responseObserver);
-          break;
-        case METHODID_SEND_CALL_LOGS:
-          serviceImpl.sendCallLogs((com.example.infoapp.proto.CallLogList) request,
-              (io.grpc.stub.StreamObserver<com.example.infoapp.proto.TransferResponse>) responseObserver);
+        case METHODID_GET_INFO:
+          serviceImpl.getInfo((com.example.infoapp.proto.InfoRequest) request,
+              (io.grpc.stub.StreamObserver<com.example.infoapp.proto.InfoResponse>) responseObserver);
           break;
         default:
           throw new AssertionError();
@@ -293,19 +228,12 @@ public final class DataTransferServiceGrpc {
   public static final io.grpc.ServerServiceDefinition bindService(AsyncService service) {
     return io.grpc.ServerServiceDefinition.builder(getServiceDescriptor())
         .addMethod(
-          getSendContactsMethod(),
+          getGetInfoMethod(),
           io.grpc.stub.ServerCalls.asyncUnaryCall(
             new MethodHandlers<
-              com.example.infoapp.proto.ContactList,
-              com.example.infoapp.proto.TransferResponse>(
-                service, METHODID_SEND_CONTACTS)))
-        .addMethod(
-          getSendCallLogsMethod(),
-          io.grpc.stub.ServerCalls.asyncUnaryCall(
-            new MethodHandlers<
-              com.example.infoapp.proto.CallLogList,
-              com.example.infoapp.proto.TransferResponse>(
-                service, METHODID_SEND_CALL_LOGS)))
+              com.example.infoapp.proto.InfoRequest,
+              com.example.infoapp.proto.InfoResponse>(
+                service, METHODID_GET_INFO)))
         .build();
   }
 
@@ -318,8 +246,7 @@ public final class DataTransferServiceGrpc {
         result = serviceDescriptor;
         if (result == null) {
           serviceDescriptor = result = io.grpc.ServiceDescriptor.newBuilder(SERVICE_NAME)
-              .addMethod(getSendContactsMethod())
-              .addMethod(getSendCallLogsMethod())
+              .addMethod(getGetInfoMethod())
               .build();
         }
       }

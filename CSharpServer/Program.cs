@@ -1,27 +1,81 @@
-﻿using CSharpServer.Services;
-using Microsoft.AspNetCore.Builder;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
+﻿
+using System;
+using System.Threading.Tasks;
+using Grpc.Net.Client;
+using CSharpServer.Protos;
 
-var builder = WebApplication.CreateBuilder(args);
-
-// Add services to the container.
-builder.Services.AddGrpc();
-
-// Configure Kestrel to listen on all interfaces on port 5000
-builder.WebHost.ConfigureKestrel(options =>
+namespace CSharpServer
 {
-    options.ListenAnyIP(5001, listenOptions =>
+    class Program
     {
-        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
-    });
-});
+        static async Task Main(string[] args)
+        {
+            // Connect to the Android device
+            // IMPORTANT: User needs to run 'adb forward tcp:50052 tcp:50052'
+            Console.WriteLine("Connecting to Android Server on localhost:50052...");
+            using var channel = GrpcChannel.ForAddress("http://localhost:50052");
+            var client = new DataTransferService.DataTransferServiceClient(channel);
 
-var app = builder.Build();
+            Console.WriteLine("Connected!");
+            Console.WriteLine("Available commands: 'contacts', 'logs', 'exit'");
 
-// Configure the HTTP request pipeline.
-app.MapGrpcService<DataTransferServiceImpl>();
-app.MapGet("/", () => "Communication with gRPC endpoints must be made through a gRPC client. To learn how to create a client, visit: https://go.microsoft.com/fwlink/?linkid=2086909");
+            while (true)
+            {
+                Console.Write("\nEnter command: ");
+                var input = Console.ReadLine()?.Trim().ToLower();
 
-app.Run();
+                if (string.IsNullOrEmpty(input)) continue;
+                if (input == "exit") break;
+
+                try
+                {
+                    if (input == "contacts")
+                    {
+                        Console.WriteLine("Requesting contacts...");
+                        var reply = await client.GetInfoAsync(new InfoRequest { Type = InfoType.Contacts });
+                        
+                        if (reply.DataCase == InfoResponse.DataOneofCase.Contacts)
+                        {
+                            Console.WriteLine($"Received {reply.Contacts.Contacts.Count} contacts:");
+                            foreach (var contact in reply.Contacts.Contacts)
+                            {
+                                Console.WriteLine($" - {contact.Name}: {contact.PhoneNumber}");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Server Message: {reply.Message}");
+                        }
+                    }
+                    else if (input == "logs")
+                    {
+                        Console.WriteLine("Requesting call logs...");
+                        var reply = await client.GetInfoAsync(new InfoRequest { Type = InfoType.CallLogs });
+                        
+                        if (reply.DataCase == InfoResponse.DataOneofCase.CallLogs)
+                        {
+                            Console.WriteLine($"Received {reply.CallLogs.Logs.Count} call logs:");
+                            foreach (var log in reply.CallLogs.Logs)
+                            {
+                                Console.WriteLine($" - {log.Number} ({log.Type}) {log.Duration}s");
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Server Message: {reply.Message}");
+                        }
+                    }
+                    else
+                    {
+                        Console.WriteLine("Unknown command. Try 'contacts' or 'logs'.");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error communicating with device: {ex.Message}");
+                    Console.WriteLine("Make sure the Android app is running 'Start Server' and you ran 'adb forward tcp:50052 tcp:50052'");
+                }
+            }
+        }
+    }
+}

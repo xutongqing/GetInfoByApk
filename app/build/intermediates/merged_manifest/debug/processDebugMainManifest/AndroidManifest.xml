@@ -17,6 +17,7 @@
         android:protectionLevel="signature" />
 
     <uses-permission android:name="com.example.infoapp.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"

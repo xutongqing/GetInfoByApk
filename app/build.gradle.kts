@@ -39,12 +39,19 @@ dependencies {
     
     // gRPC & Protobuf
     implementation("io.grpc:grpc-okhttp:1.62.2")
+    implementation("io.grpc:grpc-netty-shaded:1.62.2")
     implementation("io.grpc:grpc-protobuf-lite:1.62.2")
     implementation("io.grpc:grpc-kotlin-stub:1.4.1")
     implementation("com.google.protobuf:protobuf-kotlin-lite:4.26.0")
     
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    implementation("io.grpc:grpc-android:1.64.0")
+
+    implementation("io.grpc:grpc-netty-shaded:1.64.0")
+    implementation("io.grpc:grpc-okhttp:1.64.0")
+// 可选，备用
 }
 
 protobuf {

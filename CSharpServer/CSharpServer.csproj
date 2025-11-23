@@ -9,7 +9,7 @@
 
   <ItemGroup>
     <PackageReference Include="Grpc.AspNetCore" Version="2.66.0" />
-    <Protobuf Include="Protos/info.proto" GrpcServices="Server" />
+    <Protobuf Include="Protos/info.proto" GrpcServices="Client" />
     <PackageReference Include="Google.Protobuf" Version="3.28.0" />
     <PackageReference Include="Grpc.Tools" Version="2.66.0">
       <PrivateAssets>all</PrivateAssets>

@@ -8,8 +8,24 @@ option java_outer_classname = "InfoProto";
 option csharp_namespace = "CSharpServer.Protos";
 
 service DataTransferService {
-  rpc SendContacts (ContactList) returns (TransferResponse);
-  rpc SendCallLogs (CallLogList) returns (TransferResponse);
+  rpc GetInfo (InfoRequest) returns (InfoResponse);
+}
+
+enum InfoType {
+  CONTACTS = 0;
+  CALL_LOGS = 1;
+}
+
+message InfoRequest {
+  InfoType type = 1;
+}
+
+message InfoResponse {
+  oneof data {
+    ContactList contacts = 1;
+    CallLogList call_logs = 2;
+  }
+  string message = 3;
 }
 
 message Contact {
@@ -30,9 +46,4 @@ message CallLog {
 
 message CallLogList {
   repeated CallLog logs = 1;
-}
-
-message TransferResponse {
-  bool success = 1;
-  string message = 2;
 }

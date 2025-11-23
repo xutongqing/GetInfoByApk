@@ -9,11 +9,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.infoapp.proto.CallLogList
-import com.example.infoapp.proto.ContactList
-import com.example.infoapp.proto.DataTransferServiceGrpcKt
-import com.example.infoapp.utils.ContentReader
-import io.grpc.ManagedChannelBuilder
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -38,7 +33,7 @@ class MainActivity : AppCompatActivity() {
 
         syncButton.setOnClickListener {
             if (checkPermissions()) {
-                startSync()
+                startServer()
             } else {
                 requestPermissions()
             }
@@ -55,44 +50,46 @@ class MainActivity : AppCompatActivity() {
         ActivityCompat.requestPermissions(this, PERMISSIONS, PERMISSION_REQUEST_CODE)
     }
 
-    private fun startSync() {
-        statusText.text = "Syncing..."
-        val reader = ContentReader(this)
+    private var server: io.grpc.Server? = null
+
+    private fun startServer() {
+        if (server != null && !server!!.isShutdown) {
+            Toast.makeText(this, "Server already running", Toast.LENGTH_SHORT).show()
+            return
+        }
+
+        statusText.text = "Starting Server..."
         
         CoroutineScope(Dispatchers.IO).launch {
             try {
-                val contacts = reader.getContacts()
-                val callLogs = reader.getCallLogs()
-
-                // Connect to PC via adb reverse tcp:50051 tcp:50051
-                // Use 10.0.2.2 for Emulator, or localhost if using adb reverse
-                // Since we plan to use adb reverse, localhost should work on the device side mapping to host
-                val channel = ManagedChannelBuilder.forAddress("localhost", 50052)
-                    .usePlaintext()
+                // Use NettyServerBuilder explicitly and bind to localhost (127.0.0.1)
+                // Changing port to 50053 to avoid potential "Address in use" issues on 50052
+                server = io.grpc.netty.shaded.io.grpc.netty.NettyServerBuilder
+                    .forAddress(java.net.InetSocketAddress("127.0.0.1", 50053))
+                    .addService(InfoProviderService(applicationContext))
                     .build()
-
-                val stub = DataTransferServiceGrpcKt.DataTransferServiceCoroutineStub(channel)
-
-                val contactList = ContactList.newBuilder().addAllContacts(contacts).build()
-                val callLogList = CallLogList.newBuilder().addAllLogs(callLogs).build()
-
-                val contactResponse = stub.sendContacts(contactList)
-                val logResponse = stub.sendCallLogs(callLogList)
+                    .start()
 
                 withContext(Dispatchers.Main) {
-                    statusText.text = "Sync Complete!\nContacts: ${contactResponse.message}\nLogs: ${logResponse.message}"
-                    Toast.makeText(this@MainActivity, "Sync Successful", Toast.LENGTH_SHORT).show()
+                    statusText.text = "Server listening on port 50053\nWaiting for PC to connect..."
+                    Toast.makeText(this@MainActivity, "Server Started", Toast.LENGTH_SHORT).show()
                 }
                 
-                channel.shutdown()
+                // Keep the server running
+                server?.awaitTermination()
 
             } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
-                    statusText.text = "Error: ${e.message}"
+                    statusText.text = "Server Error: ${e.toString()}"
                     e.printStackTrace()
                 }
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        server?.shutdown()
     }
 
     override fun onRequestPermissionsResult(
@@ -103,7 +100,7 @@ class MainActivity : AppCompatActivity() {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         if (requestCode == PERMISSION_REQUEST_CODE) {
             if (grantResults.isNotEmpty() && grantResults.all { it == PackageManager.PERMISSION_GRANTED }) {
-                startSync()
+                startServer()
             } else {
                 Toast.makeText(this, "Permissions required", Toast.LENGTH_SHORT).show()
             }
