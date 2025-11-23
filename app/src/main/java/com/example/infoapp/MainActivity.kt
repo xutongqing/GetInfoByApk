@@ -38,6 +38,13 @@ class MainActivity : AppCompatActivity() {
                 requestPermissions()
             }
         }
+
+        // Auto-start server
+        if (checkPermissions()) {
+            startServer()
+        } else {
+            requestPermissions()
+        }
     }
 
     private fun checkPermissions(): Boolean {
