@@ -1,0 +1,223 @@
+syntax = "proto3";
+
+package dump.v1;
+
+option csharp_namespace = "Dump.V1";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+// =========================
+// Service
+// =========================
+service DumpTaskService {
+  // 双向流：客户端发起/控制任务；服务端推送进度、事件、以及 Dialog 请求。
+  rpc CreateTask(stream CreateTaskRequest) returns (stream CreateTaskResponse);
+}
+
+// =========================
+// Client -> Server
+// =========================
+message CreateTaskRequest {
+  // 可选：如果你一个进程只跑一个任务，可以不依赖它；
+  // 如果你未来支持同进程多任务，这个字段就有意义。
+  string task_id = 1;
+
+  oneof action {
+    StartTaskRequest start_task = 10;
+    StopTaskRequest  stop_task  = 11;
+
+    // 客户端对服务端 DialogRequest 的响应
+    DialogResponse dialog_response = 12;
+
+    // 可选：心跳（防止某些网络/NAT/代理空闲断连）
+    ClientPing ping = 13;
+  }
+}
+
+message StartTaskRequest {
+  // 任务类型（你可以填 "AdbBackupTask" / "AppleScreenTask" 等）
+  string task_type = 1;
+
+  // 任务参数：建议用 json（灵活），或用 bytes（你自己序列化）。
+  // 如果你希望强类型，可后续改成 oneof config { ... }。
+  string config_json = 2;
+
+  // 可选：工作目录、输出目录等
+  string target_directory = 3;
+}
+
+message StopTaskRequest {
+  // 可选：停止原因（用户取消/前端关闭/超时等）
+  StopReason reason = 1;
+}
+
+enum StopReason {
+  STOP_REASON_UNSPECIFIED = 0;
+  STOP_REASON_USER_CANCEL = 1;
+  STOP_REASON_UI_CLOSED   = 2;
+  STOP_REASON_TIMEOUT     = 3;
+  STOP_REASON_INTERNAL    = 4;
+}
+
+message DialogResponse {
+  // 必须与服务端下发的 DialogRequest.dialog_id 对应
+  string dialog_id = 1;
+
+  // 用户点击结果：OK/Cancel/Retry 等
+  DialogResult result = 2;
+
+  // 可选：输入框内容、选择项、扩展数据（json）
+  string payload_json = 3;
+}
+
+enum DialogResult {
+  DIALOG_RESULT_UNSPECIFIED = 0;
+  DIALOG_RESULT_OK          = 1;
+  DIALOG_RESULT_CANCEL      = 2;
+  DIALOG_RESULT_RETRY       = 3;
+  DIALOG_RESULT_IGNORE      = 4;
+}
+
+message ClientPing {
+  int64 seq = 1;
+  google.protobuf.Timestamp ts = 2;
+}
+
+// =========================
+// Server -> Client
+// =========================
+message CreateTaskResponse {
+  string task_id = 1;
+
+  oneof data {
+    // 对 Start/Stop 等动作的确认
+    ServerAck ack = 10;
+
+    // 日志/事件（可用于 UI 输出列表）
+    TaskEvent event = 11;
+
+    // 进度（用于进度条/速度/ETA）
+    TaskProgress progress = 12;
+
+    // 需要 UI 交互时下发
+    DialogRequest dialog_request = 13;
+
+    // 可选：服务端心跳回应
+    ServerPong pong = 14;
+
+    // 任务最终结束通知（你也可以只用 event+progress 组合表达）
+    TaskFinished finished = 15;
+  }
+}
+
+message ServerAck {
+  AckKind kind = 1;
+  bool ok = 2;
+  string message = 3;
+}
+
+enum AckKind {
+  ACK_KIND_UNSPECIFIED = 0;
+  ACK_KIND_START       = 1;
+  ACK_KIND_STOP        = 2;
+  ACK_KIND_DIALOG      = 3;
+  ACK_KIND_PING        = 4;
+}
+
+message TaskEvent {
+  google.protobuf.Timestamp ts = 1;
+
+  EventLevel level = 2;
+  string message = 3;
+
+  // 可选：阶段/模块/错误码
+  string stage = 4;
+  string code  = 5;
+}
+
+enum EventLevel {
+  EVENT_LEVEL_UNSPECIFIED = 0;
+  EVENT_LEVEL_INFO        = 1;
+  EVENT_LEVEL_WARN        = 2;
+  EVENT_LEVEL_ERROR       = 3;
+}
+
+message TaskProgress {
+  // 0~100（double 便于你做 0.77 缩放之类）
+  double percent = 1;
+
+  // 传输与统计
+  int64 current_bytes = 2;
+  int64 total_bytes   = 3;
+
+  // bytes per second
+  int64 bps = 4;
+
+  // 预计剩余秒
+  int64 eta_sec = 5;
+
+  ProgressState state = 6;
+}
+
+enum ProgressState {
+  PROGRESS_STATE_UNSPECIFIED = 0;
+  PROGRESS_STATE_WAITING     = 1;
+  PROGRESS_STATE_RUNNING     = 2;
+  PROGRESS_STATE_SUCCESS     = 3;
+  PROGRESS_STATE_ERROR       = 4;
+  PROGRESS_STATE_CANCEL      = 5;
+}
+
+message DialogRequest {
+  // 服务端生成唯一 id，客户端必须原样回传
+  string dialog_id = 1;
+
+  DialogKind kind = 2;
+
+  // UI 展示
+  string title = 3;
+  string message = 4;
+
+  // 可选：按钮文本/默认值/选择项/扩展数据（json）
+  string payload_json = 5;
+
+  // 可选：服务端建议超时时间（秒），客户端可据此提示/自动取消
+  int64 timeout_sec = 6;
+}
+
+enum DialogKind {
+  DIALOG_KIND_UNSPECIFIED = 0;
+
+  // “等待用户在手机上操作完成后点击继续”
+  DIALOG_KIND_WAIT = 1;
+
+  // “确认/取消”
+  DIALOG_KIND_CONFIRM = 2;
+
+  // 输入框
+  DIALOG_KIND_INPUT = 3;
+
+  // 选择项
+  DIALOG_KIND_SELECT = 4;
+}
+
+message ServerPong {
+  int64 seq = 1;
+  google.protobuf.Timestamp ts = 2;
+}
+
+message TaskFinished {
+  FinishCode code = 1;
+  string message = 2;
+
+  // 可选：产物路径、统计信息（json）
+  string payload_json = 3;
+}
+
+enum FinishCode {
+  FINISH_CODE_UNSPECIFIED = 0;
+  FINISH_CODE_SUCCESS     = 1;
+  FINISH_CODE_CANCEL      = 2;
+  FINISH_CODE_ERROR       = 3;
+}

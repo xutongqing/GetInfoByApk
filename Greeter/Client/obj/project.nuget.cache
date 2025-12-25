@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "dgSpecHash": "/XBx0ZhUWN8=",
+  "success": true,
+  "projectFilePath": "/Users/a/Downloads/grpc-dotnet-master/examples/Greeter/Client/Client.csproj",
+  "expectedPackageFiles": [
+    "/Users/a/.nuget/packages/google.protobuf/3.31.1/google.protobuf.3.31.1.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.core.api/2.70.0/grpc.core.api.2.70.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.net.client/2.70.0/grpc.net.client.2.70.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.net.common/2.70.0/grpc.net.common.2.70.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.tools/2.76.0/grpc.tools.2.76.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.logging.abstractions/6.0.0/microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512"
+  ],
+  "logs": []
+}
