@@ -1,3 +1,4 @@
+using System;
 using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
@@ -38,6 +39,7 @@ public sealed class DumpClientRunner
                     //     var r = MessageBox.Show(dlg.Message, dlg.Title, MessageBoxButton.OKCancel);
                     //     return r == MessageBoxResult.OK;
                     // });
+                    await Task.Delay(10_000, ct).ConfigureAwait(false);
 
                     // 回写 DialogResponse
                     await call.RequestStream.WriteAsync(new CreateTaskRequest

@@ -16,8 +16,9 @@
 
 #endregion
 
+using System;
+using System.Threading;
 using DumpWpfClient;
-using Greet;
 using Grpc.Net.Client;
 
 var client = new DumpClientRunner("https://localhost:5001");

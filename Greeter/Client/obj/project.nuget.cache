@@ -1,15 +1,31 @@
 {
   "version": 2,
-  "dgSpecHash": "/XBx0ZhUWN8=",
+  "dgSpecHash": "yqSL5xJ+vPs=",
   "success": true,
-  "projectFilePath": "/Users/a/Downloads/grpc-dotnet-master/examples/Greeter/Client/Client.csproj",
+  "projectFilePath": "/Users/a/RiderProjects/GetInfoByApk/Greeter/Client/Client.csproj",
   "expectedPackageFiles": [
     "/Users/a/.nuget/packages/google.protobuf/3.31.1/google.protobuf.3.31.1.nupkg.sha512",
-    "/Users/a/.nuget/packages/grpc.core.api/2.70.0/grpc.core.api.2.70.0.nupkg.sha512",
-    "/Users/a/.nuget/packages/grpc.net.client/2.70.0/grpc.net.client.2.70.0.nupkg.sha512",
-    "/Users/a/.nuget/packages/grpc.net.common/2.70.0/grpc.net.common.2.70.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.aspnetcore/2.76.0/grpc.aspnetcore.2.76.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.aspnetcore.server/2.76.0/grpc.aspnetcore.server.2.76.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.aspnetcore.server.clientfactory/2.76.0/grpc.aspnetcore.server.clientfactory.2.76.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.core.api/2.76.0/grpc.core.api.2.76.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.net.client/2.76.0/grpc.net.client.2.76.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.net.clientfactory/2.76.0/grpc.net.clientfactory.2.76.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/grpc.net.common/2.76.0/grpc.net.common.2.76.0.nupkg.sha512",
     "/Users/a/.nuget/packages/grpc.tools/2.76.0/grpc.tools.2.76.0.nupkg.sha512",
-    "/Users/a/.nuget/packages/microsoft.extensions.logging.abstractions/6.0.0/microsoft.extensions.logging.abstractions.6.0.0.nupkg.sha512"
+    "/Users/a/.nuget/packages/microsoft.extensions.configuration/8.0.0/microsoft.extensions.configuration.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.configuration.abstractions/8.0.0/microsoft.extensions.configuration.abstractions.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.configuration.binder/8.0.0/microsoft.extensions.configuration.binder.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.dependencyinjection/8.0.0/microsoft.extensions.dependencyinjection.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/8.0.0/microsoft.extensions.dependencyinjection.abstractions.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.diagnostics/8.0.0/microsoft.extensions.diagnostics.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.diagnostics.abstractions/8.0.0/microsoft.extensions.diagnostics.abstractions.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.http/8.0.0/microsoft.extensions.http.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.logging/8.0.0/microsoft.extensions.logging.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.logging.abstractions/8.0.0/microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.options/8.0.0/microsoft.extensions.options.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.options.configurationextensions/8.0.0/microsoft.extensions.options.configurationextensions.8.0.0.nupkg.sha512",
+    "/Users/a/.nuget/packages/microsoft.extensions.primitives/8.0.0/microsoft.extensions.primitives.8.0.0.nupkg.sha512"
   ],
   "logs": []
 }

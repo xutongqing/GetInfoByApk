@@ -1,3 +1,6 @@
+using System;
+using System.Threading;
+using System.Threading.Tasks;
 using Dump.V1;
 using Google.Protobuf.WellKnownTypes;
 using Grpc.Core;
@@ -115,6 +118,7 @@ public sealed class DumpTaskGrpcService : DumpTaskService.DumpTaskServiceBase
                         break;
 
                     case CreateTaskRequest.ActionOneofCase.Ping:
+                        Console.WriteLine("1321321312");
                         await responseStream.WriteAsync(new CreateTaskResponse
                         {
                             TaskId = req.TaskId,

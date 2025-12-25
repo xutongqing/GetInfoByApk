@@ -1,33 +1,26 @@
 {
   "format": 1,
   "restore": {
-    "/Users/a/Downloads/grpc-dotnet-master/examples/Greeter/Server/Server.csproj": {}
+    "/Users/a/RiderProjects/GetInfoByApk/Greeter/Server/Server.csproj": {}
   },
   "projects": {
-    "/Users/a/Downloads/grpc-dotnet-master/examples/Greeter/Server/Server.csproj": {
-      "version": "2.66.0-dev",
+    "/Users/a/RiderProjects/GetInfoByApk/Greeter/Server/Server.csproj": {
+      "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/a/Downloads/grpc-dotnet-master/examples/Greeter/Server/Server.csproj",
+        "projectUniqueName": "/Users/a/RiderProjects/GetInfoByApk/Greeter/Server/Server.csproj",
         "projectName": "Server",
-        "projectPath": "/Users/a/Downloads/grpc-dotnet-master/examples/Greeter/Server/Server.csproj",
+        "projectPath": "/Users/a/RiderProjects/GetInfoByApk/Greeter/Server/Server.csproj",
         "packagesPath": "/Users/a/.nuget/packages/",
-        "outputPath": "/Users/a/Downloads/grpc-dotnet-master/examples/Greeter/Server/obj/",
+        "outputPath": "/Users/a/RiderProjects/GetInfoByApk/Greeter/Server/obj/",
         "projectStyle": "PackageReference",
-        "centralPackageVersionsManagementEnabled": true,
         "configFilePaths": [
-          "/Users/a/Downloads/grpc-dotnet-master/NuGet.Config",
           "/Users/a/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net10.0"
         ],
         "sources": {
-          "https://api.nuget.org/v3/index.json": {},
-          "https://grpc.jfrog.io/grpc/api/nuget/v3/grpc-nuget-dev": {},
-          "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet10/nuget/v3/index.json": {},
-          "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet7/nuget/v3/index.json": {},
-          "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet8/nuget/v3/index.json": {},
-          "https://pkgs.dev.azure.com/dnceng/public/_packaging/dotnet9/nuget/v3/index.json": {}
+          "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net10.0": {
@@ -36,7 +29,6 @@
           }
         },
         "warningProperties": {
-          "allWarningsAsErrors": true,
           "warnAsError": [
             "NU1605"
           ]
@@ -54,73 +46,8 @@
           "dependencies": {
             "Grpc.AspNetCore": {
               "target": "Package",
-              "version": "[2.70.0, )",
-              "versionCentrallyManaged": true
+              "version": "[2.76.0, )"
             }
-          },
-          "centralPackageVersions": {
-            "BenchmarkDotNet": "0.15.2",
-            "CommandLineParser": "2.5.0",
-            "Google.Api.CommonProtos": "2.16.0",
-            "Google.Apis.Auth": "1.70.0",
-            "Google.Protobuf": "3.31.1",
-            "Grpc.AspNetCore": "2.70.0",
-            "Grpc.AspNetCore.HealthChecks": "2.70.0",
-            "Grpc.AspNetCore.Server": "2.70.0",
-            "Grpc.AspNetCore.Server.Reflection": "2.70.0",
-            "Grpc.AspNetCore.Web": "2.70.0",
-            "Grpc.Auth": "2.70.0",
-            "Grpc.Core": "2.46.6",
-            "Grpc.Core.Api": "2.70.0",
-            "Grpc.HealthCheck": "2.70.0",
-            "Grpc.Net.Client": "2.70.0",
-            "Grpc.Net.Client.Web": "2.70.0",
-            "Grpc.Net.ClientFactory": "2.70.0",
-            "Grpc.Reflection": "2.70.0",
-            "Grpc.StatusProto": "2.70.0",
-            "Grpc.Tools": "2.76.0",
-            "Microsoft.AspNetCore.Authentication.Certificate": "10.0.0",
-            "Microsoft.AspNetCore.Authentication.JwtBearer": "10.0.0",
-            "Microsoft.AspNetCore.Components.WebAssembly": "10.0.0",
-            "Microsoft.AspNetCore.Components.WebAssembly.DevServer": "10.0.0",
-            "Microsoft.AspNetCore.Components.WebAssembly.Server": "10.0.0",
-            "Microsoft.AspNetCore.Grpc.JsonTranscoding": "10.0.0",
-            "Microsoft.AspNetCore.Grpc.Swagger": "0.8.0",
-            "Microsoft.AspNetCore.SpaServices.Extensions": "10.0.0",
-            "Microsoft.AspNetCore.TestHost": "10.0.0",
-            "Microsoft.Bcl.AsyncInterfaces": "8.0.0",
-            "Microsoft.Build": "17.3.2",
-            "Microsoft.Build.Locator": "1.5.5",
-            "Microsoft.CodeAnalysis.NetAnalyzers": "10.0.100",
-            "Microsoft.Crank.EventSources": "0.2.0-alpha.25128.2",
-            "Microsoft.Extensions.DependencyInjection": "10.0.0",
-            "Microsoft.Extensions.Hosting": "10.0.0",
-            "Microsoft.Extensions.Http": "10.0.0",
-            "Microsoft.Extensions.Logging": "10.0.0",
-            "Microsoft.Extensions.Logging.Abstractions": "10.0.0",
-            "Microsoft.Extensions.Logging.Console": "10.0.0",
-            "Microsoft.NET.Test.Sdk": "17.14.1",
-            "Microsoft.SourceLink.GitHub": "8.0.0",
-            "Microsoft.Win32.Registry": "4.6.0",
-            "Moq": "4.20.70",
-            "Newtonsoft.Json": "13.0.3",
-            "Nunit": "4.3.2",
-            "NUnit3TestAdapter": "5.0.0",
-            "OpenTelemetry": "1.6.0",
-            "OpenTelemetry.Exporter.Zipkin": "1.6.0",
-            "OpenTelemetry.Extensions.Hosting": "1.6.0",
-            "OpenTelemetry.Instrumentation.AspNetCore": "1.8.1",
-            "OpenTelemetry.Instrumentation.GrpcNetClient": "1.8.0-beta.1",
-            "OpenTelemetry.Instrumentation.Http": "1.8.1",
-            "protobuf-net.Grpc": "1.0.140",
-            "protobuf-net.Grpc.AspNetCore": "1.0.140",
-            "System.CommandLine": "2.0.0",
-            "System.Diagnostics.DiagnosticSource": "6.0.1",
-            "System.Memory": "4.5.3",
-            "System.Net.Http.WinHttpHandler": "8.0.3",
-            "System.Security.Principal.Windows": "5.0.0",
-            "System.Text.Json": "8.0.6",
-            "System.Threading.Channels": "4.6.0"
           },
           "imports": [
             "net461",

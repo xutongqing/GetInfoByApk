@@ -1,4 +1,0 @@
-obj/Debug/net10.0/Test/Dump.cs \
-obj/Debug/net10.0/Test/DumpGrpc.cs: /Users/a/.nuget/packages/grpc.tools/2.70.0/build/native/include/google/protobuf/empty.proto\
- /Users/a/.nuget/packages/grpc.tools/2.70.0/build/native/include/google/protobuf/timestamp.proto\
- Test/dump.proto
