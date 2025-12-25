@@ -1,5 +1,6 @@
 using System;
 using System.Threading;
+using System.Threading.Channels;
 using System.Threading.Tasks;
 using Dump.V1;
 using Google.Protobuf.WellKnownTypes;
@@ -15,18 +16,40 @@ public sealed class DumpTaskGrpcService : DumpTaskService.DumpTaskServiceBase
         ServerCallContext context)
     {
         using var taskCtx = new DumpTaskContext();
-        var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(taskCtx.Token, context.CancellationToken);
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(taskCtx.Token, context.CancellationToken);
+        var ct = linkedCts.Token;
 
-        // 写循环：把 DialogRequest 持续推给客户端
-        var writeDialogLoop = Task.Run(async () =>
+        // 单一写通道：所有响应都从这里出去，避免并发写 responseStream
+        var outbox = Channel.CreateUnbounded<CreateTaskResponse>(new UnboundedChannelOptions
+        {
+            SingleReader = true,
+            SingleWriter = false
+        });
+
+        // 统一 Writer：唯一一个对 responseStream.WriteAsync 的调用点
+        var writer = Task.Run(async () =>
         {
             try
             {
-                await foreach (var dlg in taskCtx.ReadDialogsAsync(linkedCts.Token))
+                await foreach (var msg in outbox.Reader.ReadAllAsync(ct).ConfigureAwait(false))
                 {
-                    var resp = new CreateTaskResponse
+                    await responseStream.WriteAsync(msg).ConfigureAwait(false);
+                }
+            }
+            catch (OperationCanceledException) { }
+            catch { /* client disconnected */ }
+        }, CancellationToken.None);
+
+        // 订阅：把 taskCtx 里产生的 Dialog/Event/Progress 转成 proto 响应投递到 outbox
+        var dialogLoop = Task.Run(async () =>
+        {
+            try
+            {
+                await foreach (var dlg in taskCtx.ReadDialogsAsync(ct).ConfigureAwait(false))
+                {
+                    await outbox.Writer.WriteAsync(new CreateTaskResponse
                     {
-                        TaskId = "single", // 你一个进程一个任务就写死也行
+                        TaskId = "single",
                         DialogRequest = new DialogRequest
                         {
                             DialogId = dlg.DialogId,
@@ -36,8 +59,54 @@ public sealed class DumpTaskGrpcService : DumpTaskService.DumpTaskServiceBase
                             PayloadJson = dlg.PayloadJson ?? "",
                             TimeoutSec = dlg.TimeoutSec
                         }
-                    };
-                    await responseStream.WriteAsync(resp).ConfigureAwait(false);
+                    }, ct).ConfigureAwait(false);
+                }
+            }
+            catch (OperationCanceledException) { }
+        }, CancellationToken.None);
+
+        var eventLoop = Task.Run(async () =>
+        {
+            try
+            {
+                await foreach (var e in taskCtx.ReadEventsAsync(ct).ConfigureAwait(false))
+                {
+                    await outbox.Writer.WriteAsync(new CreateTaskResponse
+                    {
+                        TaskId = "single",
+                        Event = new TaskEvent
+                        {
+                            Ts = Timestamp.FromDateTime(DateTime.SpecifyKind(e.TimeUtc, DateTimeKind.Utc)),
+                            Level = (EventLevel)e.Level,
+                            Message = e.Message ?? "",
+                            Stage = e.Stage ?? "",
+                            Code = e.Code ?? ""
+                        }
+                    }, ct).ConfigureAwait(false);
+                }
+            }
+            catch (OperationCanceledException) { }
+        }, CancellationToken.None);
+
+        var progressLoop = Task.Run(async () =>
+        {
+            try
+            {
+                await foreach (var p in taskCtx.ReadProgressAsync(ct).ConfigureAwait(false))
+                {
+                    await outbox.Writer.WriteAsync(new CreateTaskResponse
+                    {
+                        TaskId = "single",
+                        Progress = new TaskProgress
+                        {
+                            Percent = p.Percent,
+                            CurrentBytes = p.CurrentBytes,
+                            TotalBytes = p.TotalBytes,
+                            Bps = p.Bps,
+                            EtaSec = p.EtaSec,
+                            State = (ProgressState)p.State
+                        }
+                    }, ct).ConfigureAwait(false);
                 }
             }
             catch (OperationCanceledException) { }
@@ -47,59 +116,53 @@ public sealed class DumpTaskGrpcService : DumpTaskService.DumpTaskServiceBase
 
         try
         {
-            // 读循环：读取客户端指令
             while (await requestStream.MoveNext().ConfigureAwait(false))
             {
                 var req = requestStream.Current;
+                var taskId = string.IsNullOrWhiteSpace(req.TaskId) ? "single" : req.TaskId;
 
                 switch (req.ActionCase)
                 {
                     case CreateTaskRequest.ActionOneofCase.StartTask:
                         if (runningTask != null)
                         {
-                            await responseStream.WriteAsync(new CreateTaskResponse
+                            await outbox.Writer.WriteAsync(new CreateTaskResponse
                             {
-                                TaskId = req.TaskId,
+                                TaskId = taskId,
                                 Ack = new ServerAck { Kind = AckKind.Start, Ok = false, Message = "Task already started" }
-                            }).ConfigureAwait(false);
+                            }, ct).ConfigureAwait(false);
                             break;
                         }
 
-                        await responseStream.WriteAsync(new CreateTaskResponse
+                        await outbox.Writer.WriteAsync(new CreateTaskResponse
                         {
-                            TaskId = req.TaskId,
+                            TaskId = taskId,
                             Ack = new ServerAck { Kind = AckKind.Start, Ok = true, Message = "Task starting" }
-                        }).ConfigureAwait(false);
+                        }, ct).ConfigureAwait(false);
 
                         runningTask = Task.Run(async () =>
                         {
-                            // 这里你可以按 task_type 做工厂/反射/DI
-                            var task = new AdbBackupTask(taskCtx);
-
-                            // 可选：发一些事件
-                            await responseStream.WriteAsync(new CreateTaskResponse
+                            // 任务开始前先发一条日志 + 进度状态
+                            taskCtx.LogInfo($"Start task_type={req.StartTask.TaskType}", stage: "Start");
+                            taskCtx.ReportProgress(new ProgressModel
                             {
-                                TaskId = req.TaskId,
-                                Event = new TaskEvent
-                                {
-                                    Ts = Timestamp.FromDateTime(DateTime.UtcNow),
-                                    Level = EventLevel.Error,
-                                    Message = $"Start task_type={req.StartTask.TaskType}"
-                                }
-                            }).ConfigureAwait(false);
+                                Percent = 0,
+                                State = ProgressStateModel.RUNNING
+                            });
 
-                            return await task.RunAsync(linkedCts.Token).ConfigureAwait(false);
+                            var task = new AdbBackupTask(taskCtx);
+                            return await task.RunAsync(ct).ConfigureAwait(false);
                         }, CancellationToken.None);
 
                         break;
 
                     case CreateTaskRequest.ActionOneofCase.StopTask:
                         taskCtx.Cancel();
-                        await responseStream.WriteAsync(new CreateTaskResponse
+                        await outbox.Writer.WriteAsync(new CreateTaskResponse
                         {
-                            TaskId = req.TaskId,
+                            TaskId = taskId,
                             Ack = new ServerAck { Kind = AckKind.Stop, Ok = true, Message = "Cancel requested" }
-                        }).ConfigureAwait(false);
+                        }, ct).ConfigureAwait(false);
                         break;
 
                     case CreateTaskRequest.ActionOneofCase.DialogResponse:
@@ -109,31 +172,29 @@ public sealed class DumpTaskGrpcService : DumpTaskService.DumpTaskServiceBase
                             req.DialogResponse.PayloadJson ?? ""
                         ));
 
-                        // 可选 ack
-                        await responseStream.WriteAsync(new CreateTaskResponse
+                        await outbox.Writer.WriteAsync(new CreateTaskResponse
                         {
-                            TaskId = req.TaskId,
+                            TaskId = taskId,
                             Ack = new ServerAck { Kind = AckKind.Dialog, Ok = true, Message = "Dialog response received" }
-                        }).ConfigureAwait(false);
+                        }, ct).ConfigureAwait(false);
                         break;
 
                     case CreateTaskRequest.ActionOneofCase.Ping:
-                        Console.WriteLine("1321321312");
-                        await responseStream.WriteAsync(new CreateTaskResponse
+                        await outbox.Writer.WriteAsync(new CreateTaskResponse
                         {
-                            TaskId = req.TaskId,
-                            Pong = new ServerPong { Seq = req.Ping.Seq, Ts = Timestamp.FromDateTime(DateTime.UtcNow) }
-                        }).ConfigureAwait(false);
-                        break;
-
-                    default:
+                            TaskId = taskId,
+                            Pong = new ServerPong
+                            {
+                                Seq = req.Ping.Seq,
+                                Ts = Timestamp.FromDateTime(DateTime.UtcNow)
+                            }
+                        }, ct).ConfigureAwait(false);
                         break;
                 }
             }
         }
         finally
         {
-            // 客户端断开/流结束：请求取消
             taskCtx.Cancel();
             linkedCts.Cancel();
 
@@ -143,29 +204,44 @@ public sealed class DumpTaskGrpcService : DumpTaskService.DumpTaskServiceBase
                 try { code = await runningTask.ConfigureAwait(false); }
                 catch { code = DumpExitCode.Error; }
 
-                // 尝试发送 finished（如果流还可写）
+                // finished + 最终进度状态
+                var finishCode = code switch
+                {
+                    DumpExitCode.Success => FinishCode.Success,
+                    DumpExitCode.Cancel  => FinishCode.Cancel,
+                    _                    => FinishCode.Error
+                };
+
+                taskCtx.ReportProgress(new ProgressModel
+                {
+                    Percent = (code == DumpExitCode.Success) ? 100 : 0,
+                    State = code switch
+                    {
+                        DumpExitCode.Success => ProgressStateModel.SUCCESS,
+                        DumpExitCode.Cancel  => ProgressStateModel.CANCEL,
+                        _                    => ProgressStateModel.ERROR
+                    }
+                });
+
                 try
                 {
-                    await responseStream.WriteAsync(new CreateTaskResponse
+                    await outbox.Writer.WriteAsync(new CreateTaskResponse
                     {
                         TaskId = "single",
                         Finished = new TaskFinished
                         {
-                            Code = code switch
-                            {
-                                DumpExitCode.Success => FinishCode.Success,
-                                DumpExitCode.Cancel  => FinishCode.Cancel,
-                                _                    => FinishCode.Error
-                            },
-                            Message = $"Finished with {code}"
+                            Code = finishCode,
+                            Message = $"Finished with {code}",
                         }
-                    }).ConfigureAwait(false);
+                    }, CancellationToken.None).ConfigureAwait(false);
                 }
                 catch { }
             }
 
-            try { await writeDialogLoop.ConfigureAwait(false); } catch { }
-            linkedCts.Dispose();
+            // 关闭 outbox，收尾
+            outbox.Writer.TryComplete();
+            try { await Task.WhenAll(dialogLoop, eventLoop, progressLoop).ConfigureAwait(false); } catch { }
+            try { await writer.ConfigureAwait(false); } catch { }
         }
     }
 }
