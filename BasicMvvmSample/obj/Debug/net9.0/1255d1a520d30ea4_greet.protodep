@@ -1,0 +1,4 @@
+obj/Debug/net9.0/Protos/Greet.cs \
+obj/Debug/net9.0/Protos/GreetGrpc.cs: /Users/a/.nuget/packages/grpc.tools/2.76.0/build/native/include/google/protobuf/empty.proto\
+ /Users/a/.nuget/packages/grpc.tools/2.76.0/build/native/include/google/protobuf/timestamp.proto\
+ Protos/greet.proto

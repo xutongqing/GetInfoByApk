@@ -1,0 +1,28 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="BasicMvvmSample.Views.MainWindow"
+        Width="900" Height="600"
+        Title="Dump Client">
+	<Grid RowDefinitions="Auto,Auto,*" Margin="12" ColumnDefinitions="*,Auto,Auto,Auto">
+		<TextBox Grid.Row="0" Grid.Column="0"
+		         Watermark="gRPC Address"
+		         Text="{Binding Address}"/>
+
+		<Button Grid.Row="0" Grid.Column="1" Margin="8,0,0,0"
+		        Content="Start" Click="Start_Click"/>
+
+		<Button Grid.Row="0" Grid.Column="2" Margin="8,0,0,0"
+		        Content="Stop" Click="Stop_Click"/>
+
+		<TextBlock Grid.Row="0" Grid.Column="3" Margin="12,0,0,0"
+		           VerticalAlignment="Center"
+		           Text="{Binding Status}"/>
+
+		<ProgressBar Grid.Row="1" Grid.ColumnSpan="4"
+		             Height="18" Minimum="0" Maximum="100"
+		             Value="{Binding Progress}" Margin="0,10,0,10"/>
+
+		<ListBox Grid.Row="2" Grid.ColumnSpan="4"
+		         ItemsSource="{Binding Logs}"/>
+	</Grid>
+</Window>
