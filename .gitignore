@@ -1,3 +1,5 @@
 *.lock
 .gradle
 app/build
+InstallApkDemo/InstallApkDemo/obj
+DumpServer/.idea
